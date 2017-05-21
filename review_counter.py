@@ -3,9 +3,11 @@
 '''
 review counter
 '''
-import requests
-from time import gmtime, strftime
+from time import sleep
 from datetime import datetime, timedelta
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import requests
 
 
 class ReviewRequest():
@@ -40,6 +42,57 @@ class ReviewRequest():
         return response.json()
 
 
+class ForumRequest():
+    """
+    get the data from udacity forum
+    """
+    def __init__(self, forum_url):
+        self.forum_url = forum_url
+        self.post_id = "ember1020"
+        self.theme_id = "ember1019"
+
+    def get_html(self):
+        """
+        get forum html text
+        """
+        driver = webdriver.Chrome()
+        driver.get(self.forum_url)
+        sleep(3)
+        return driver.page_source
+
+    def get_number_with_id(self, element_id):
+        """
+        get the data in froum page with id
+        """
+        html_text = self.get_html()
+        soup = BeautifulSoup(html_text, "lxml")
+        count = soup.find(id=element_id).find("span", {"class": "number"}).string
+        return int(count)
+
+    def get_all_count(self):
+        """
+        get the sum of theme and post data in froum page
+        """
+        html_text = self.get_html()
+        soup = BeautifulSoup(html_text, "lxml")
+        count_of_post = soup.find(id=self.post_id).find("span", {"class": "number"}).string
+        count_of_theme = soup.find(id=self.theme_id).find("span", {"class": "number"}).string
+        count = int(count_of_post) + int(count_of_theme)
+        return count
+
+    def get_post_count(self):
+        """
+        get the count of post
+        """
+        return self.get_number_with_id(self.post_id)
+
+    def get_theme_count(self):
+        """
+        get the count of theme
+        """
+        return self.get_number_with_id(self.theme_id)
+
+
 class ReviewCounter(ReviewRequest):
     """
     handle the count of review
@@ -51,18 +104,61 @@ class ReviewCounter(ReviewRequest):
         """
         get count of reviews in today
         """
-        return len(self.get_reviews_today())
+        return len(self.get_reviews_before_days(0))
 
-    def get_reviews_today(self):
+    def get_reviews_before_days(self, days):
         """
-        get review that is completed today
+        get review that is completed from days
         """
         time_format = "%Y-%m-%dT00:00:00Z"
-        yesterday = datetime.now() - timedelta(days=1)
-        start_time = yesterday.strftime(time_format)
+        start_date = datetime.now() - timedelta(days=days+1)
+        start_time = start_date.strftime(time_format)
         return self.get_review_completed_in_time(start_time)
 
+    def get_reviews_before_months(self, monthes):
+        """
+        get review that is comleted in this month
+        """
+        time_format = "%Y-%m-01T00:00:00Z"
+        start_date = datetime.now() - timedelta(days=monthes*30)
+        start_time = start_date.strftime(time_format)
+        return self.get_review_completed_in_time(start_time)
 
+    def get_count_month(self):
+        """
+        get the count of reviews in this month
+        """
+        return len(self.get_reviews_before_months(0))
+
+    def get_money_today(self, before_days):
+        """
+        get the sum of the money in reviews that is completed today
+        """
+        sum_money = 0
+        today_reviews = self.get_reviews_before_days(before_days)
+        for review in today_reviews:
+            sum_money += float(review['price'])
+        return sum_money
+
+    def get_money_month(self, before_months):
+        """
+        get money in this month
+        """
+        sum_money = 0
+        month_reviews = self.get_reviews_before_months(before_months)
+        for review in month_reviews:
+            sum_money += float(review['price'])
+        return sum_money
+
+
+StartFroumCount = 534
 Token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozMTQ0MywiZXhwIjoxNDk3NzM3NDcwLCJ0b2tlbl90eXBlIjoiYXBpIn0.lkJmwgDSZzz-Arhn5JTRX5P6Wi1cAmbGP9DMlOL8YRQ'
+Url = 'http://discussions.youdaxue.com/users/_Mo/summary'
 review_counter = ReviewCounter(Token)
-print(review_counter.get_count_today())
+forum_counter = ForumRequest(Url)
+# print(review_counter.get_count_today(0))
+# print(review_counter.get_count_month(0))
+# print(review_counter.get_money_month(0))
+# print(forum_counter.get_post_count())
+# print(forum_counter.get_theme_count())
+print(forum_counter.get_all_count() - StartFroumCount)
