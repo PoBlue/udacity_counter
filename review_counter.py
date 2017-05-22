@@ -1,12 +1,8 @@
-# !/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
 review counter
 '''
-from time import sleep
 from datetime import datetime, timedelta
-from selenium import webdriver
-from bs4 import BeautifulSoup
 import requests
 
 
@@ -40,57 +36,6 @@ class ReviewRequest():
         params = {'start_date': start_time}
         response = self.get_method(self.comleted_url, params=params)
         return response.json()
-
-
-class ForumRequest():
-    """
-    get the data from udacity forum
-    """
-    def __init__(self, forum_url):
-        self.forum_url = forum_url
-        self.post_id = "ember1020"
-        self.theme_id = "ember1019"
-
-    def get_html(self):
-        """
-        get forum html text
-        """
-        driver = webdriver.Chrome()
-        driver.get(self.forum_url)
-        sleep(3)
-        return driver.page_source
-
-    def get_number_with_id(self, element_id):
-        """
-        get the data in froum page with id
-        """
-        html_text = self.get_html()
-        soup = BeautifulSoup(html_text, "lxml")
-        count = soup.find(id=element_id).find("span", {"class": "number"}).string
-        return int(count)
-
-    def get_all_count(self):
-        """
-        get the sum of theme and post data in froum page
-        """
-        html_text = self.get_html()
-        soup = BeautifulSoup(html_text, "lxml")
-        count_of_post = soup.find(id=self.post_id).find("span", {"class": "number"}).string
-        count_of_theme = soup.find(id=self.theme_id).find("span", {"class": "number"}).string
-        count = int(count_of_post) + int(count_of_theme)
-        return count
-
-    def get_post_count(self):
-        """
-        get the count of post
-        """
-        return self.get_number_with_id(self.post_id)
-
-    def get_theme_count(self):
-        """
-        get the count of theme
-        """
-        return self.get_number_with_id(self.theme_id)
 
 
 class ReviewCounter(ReviewRequest):
@@ -149,16 +94,3 @@ class ReviewCounter(ReviewRequest):
         for review in month_reviews:
             sum_money += float(review['price'])
         return sum_money
-
-
-StartFroumCount = 534
-Token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozMTQ0MywiZXhwIjoxNDk3NzM3NDcwLCJ0b2tlbl90eXBlIjoiYXBpIn0.lkJmwgDSZzz-Arhn5JTRX5P6Wi1cAmbGP9DMlOL8YRQ'
-Url = 'http://discussions.youdaxue.com/users/_Mo/summary'
-review_counter = ReviewCounter(Token)
-forum_counter = ForumRequest(Url)
-# print(review_counter.get_count_today(0))
-# print(review_counter.get_count_month(0))
-# print(review_counter.get_money_month(0))
-# print(forum_counter.get_post_count())
-# print(forum_counter.get_theme_count())
-print(forum_counter.get_all_count() - StartFroumCount)
