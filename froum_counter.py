@@ -11,16 +11,17 @@ class FroumRequest():
     """
     get the data from udacity forum
     """
-    def __init__(self, forum_url):
+    def __init__(self, forum_url, web_driver_path):
         self.forum_url = forum_url
         self.post_id = "ember1020"
         self.theme_id = "ember1019"
+        self.web_driver_path = web_driver_path
 
     def get_html(self):
         """
         get forum html text
         """
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome(self.web_driver_path)
         driver.get(self.forum_url)
         sleep(3)
         return driver.page_source
