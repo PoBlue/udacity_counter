@@ -9,9 +9,6 @@ from clint.arguments import Args
 
 args = Args()
 
-StartFroumCount = 534
-# print(forum_counter.get_all_count() - StartFroumCount)
-
 
 class CmdInterface():
     """

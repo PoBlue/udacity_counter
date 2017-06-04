@@ -4,7 +4,7 @@ from datetime import date
 
 db = Database()
 db.bind('sqlite', 'database.sqlite', create_db=True)
-sql_debug(True)
+# sql_debug(True)
 
 
 class ForumData(db.Entity):
