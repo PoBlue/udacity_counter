@@ -100,7 +100,13 @@ class CmdInterface():
                     print(self.review_counter.get_money_month(num_of_monthes))
             if command == 'help':
                 print("""
-
+                    [froum] to show froum money
+                        [-m] get moneny this month
+                        [-n] get money days ago
+                        [-set count year month day] set count on day month in year
+                    [review] to show review money
+                        [-m number] from number monthes ago
+                        [-n number] from number days ago]
                     [show] to show the setting
                     [-chrome_path] to set chrome path
                     [-forum_url] to set froum url
