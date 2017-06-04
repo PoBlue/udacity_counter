@@ -80,6 +80,19 @@ class FroumCounter(FroumRequest):
         self.add_count_date(new_count, date.today())
         return (new_count - forum_data.count) * self.money_each_forum
 
+    def get_money_month(self):
+        """
+        return money that a this month
+        """
+        _month_ago_date = date.today() - timedelta(days=30)
+        _base_date = date(date.today().year, date.today().month, self.base_day)
+        if date.today() < _base_date:
+            _base_date = date(_month_ago_date.year, _month_ago_date.month, self.base_day)
+        forum_data = froum_database.get_forum_data_recently(_base_date)
+        new_count = self.get_all_count()
+        self.add_count_date(new_count, date.today())
+        return (new_count - forum_data.count) * self.money_each_forum
+
     def add_count_day(self, count, year, month, day):
         """
         add a new data to database
@@ -93,6 +106,6 @@ class FroumCounter(FroumRequest):
         """
         forum_data = froum_database.get_forum_in_date(_date)
         if forum_data is not None:
-            froum_database.update_forum_count(forum_data, count)
+            froum_database.update_forum_count(_date, count)
         else:
             froum_database.add_forum_data(count, _date)
