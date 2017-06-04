@@ -3,8 +3,10 @@
 froum counter
 """
 from time import sleep
+from datetime import date, timedelta
 from selenium import webdriver
 from bs4 import BeautifulSoup
+import froum_database
 
 
 class FroumRequest():
@@ -66,9 +68,31 @@ class FroumCounter(FroumRequest):
     def __init__(self, forum_url, web_driver_path):
         FroumRequest.__init__(self, forum_url, web_driver_path)
         self.money_each_forum = 20
+        self.base_day = 12
 
-    def get_money_day(self, days):
+    def get_money_day(self, _days):
         """
         get money from days ago
         """
-        return self.get_all_count() * self.money_each_forum
+        _yesterday_date = date.today() - timedelta(days=_days + 1)
+        forum_data = froum_database.get_forum_data_recently(_yesterday_date)
+        new_count = self.get_all_count()
+        self.add_count_date(new_count, date.today())
+        return (new_count - forum_data.count) * self.money_each_forum
+
+    def add_count_day(self, count, year, month, day):
+        """
+        add a new data to database
+        """
+        new_date = date(year, month, day)
+        self.add_count_date(count, new_date)
+
+    def add_count_date(self, count, _date):
+        """
+        add a new data to database
+        """
+        forum_data = froum_database.get_forum_in_date(_date)
+        if forum_data is not None:
+            froum_database.update_forum_count(forum_data, count)
+        else:
+            froum_database.add_forum_data(count, _date)

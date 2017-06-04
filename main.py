@@ -81,7 +81,14 @@ class CmdInterface():
                 num_of_days = 0
                 if '-n' in flag_args:
                     num_of_days = int(flag_args['-n'][0])
-                print(self.forum_counter.get_money_day(num_of_days))
+                    print(self.forum_counter.get_money_day(num_of_days))
+                if '-set' in flag_args:
+                    print('add data succesful')
+                    count = int(flag_args['-set'][0])
+                    year = int(flag_args['-set'][1])
+                    month = int(flag_args['-set'][2])
+                    day = int(flag_args['-set'][3])
+                    self.forum_counter.add_count_day(count, year, month, day)
             if command == 'review':
                 if '-n' in flag_args:
                     num_of_days = int(flag_args['-n'][0])
