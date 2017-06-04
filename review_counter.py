@@ -44,6 +44,7 @@ class ReviewCounter(ReviewRequest):
     """
     def __init__(self, token):
         ReviewRequest.__init__(self, token)
+        self.dolar_rate = 6.8
 
     def get_count_today(self):
         """
@@ -83,7 +84,7 @@ class ReviewCounter(ReviewRequest):
         today_reviews = self.get_reviews_before_days(before_days)
         for review in today_reviews:
             sum_money += float(review['price'])
-        return sum_money
+        return sum_money * self.dolar_rate
 
     def get_money_month(self, before_months):
         """
@@ -93,4 +94,4 @@ class ReviewCounter(ReviewRequest):
         month_reviews = self.get_reviews_before_months(before_months)
         for review in month_reviews:
             sum_money += float(review['price'])
-        return sum_money
+        return sum_money * self.dolar_rate

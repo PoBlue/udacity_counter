@@ -57,3 +57,18 @@ class FroumRequest():
         get the count of theme
         """
         return self.get_number_with_id(self.theme_id)
+
+
+class FroumCounter(FroumRequest):
+    """
+    class that handler froum counter
+    """
+    def __init__(self, forum_url, web_driver_path):
+        FroumRequest.__init__(self, forum_url, web_driver_path)
+        self.money_each_forum = 20
+
+    def get_money_day(self, days):
+        """
+        get money from days ago
+        """
+        return self.get_all_count() * self.money_each_forum
