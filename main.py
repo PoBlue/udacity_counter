@@ -64,7 +64,6 @@ class CmdInterface():
         command line handler
         """
         flag_args = args.grouped
-        print(flag_args)
         cmd = flag_args['_']
         if '-token' in flag_args:
             self.token = flag_args['-token'][0]
@@ -74,6 +73,14 @@ class CmdInterface():
             self.chrome_path = flag_args['-chrome_path'][0]
         if len(cmd) > 0:
             command = cmd[0]
+            if command == 'today':
+                forum_money = self.forum_counter.get_money_day(0)
+                review_money = self.review_counter.get_money_today(0)
+                print('today: {0}'.format(forum_money + review_money))
+            if command == 'month':
+                forum_money = self.forum_counter.get_money_month()
+                review_money = self.review_counter.get_money_month(0)
+                print('month: {0}'.format(forum_money + review_money))
             if command == 'froum':
                 num_of_days = 0
                 if '-n' in flag_args:
@@ -97,6 +104,8 @@ class CmdInterface():
                     print(self.review_counter.get_money_month(num_of_monthes))
             if command == 'help':
                 print("""
+                    [today] to get sum of money today
+                    [month] to get sum of money in this month
                     [froum] to show froum money
                         [-m] get moneny this month
                         [-n] get money days ago
