@@ -56,7 +56,7 @@ class ReviewCounter(ReviewRequest):
         """
         get review that is completed from days
         """
-        time_format = "%Y-%m-%dT00:00:00Z"
+        time_format = "%Y-%m-%dT15:00:00Z"
         start_date = datetime.now() - timedelta(days=days+1)
         start_time = start_date.strftime(time_format)
         return self.get_review_completed_in_time(start_time)
